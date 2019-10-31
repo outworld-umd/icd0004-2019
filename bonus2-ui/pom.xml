@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>gm.taltech.ee</groupId>
-    <artifactId>ui-automation-selenium</artifactId>
+    <artifactId>bonus2-ui</artifactId>
     <version>0.0.1</version>
 
     <name>ui-automation-selenium</name>

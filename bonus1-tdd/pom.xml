@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>icd0004.taltech.ee</groupId>
-    <artifactId>tdd-practice</artifactId>
+    <artifactId>bonus1-tdd</artifactId>
     <version>0.0.1</version>
 
     <properties>
