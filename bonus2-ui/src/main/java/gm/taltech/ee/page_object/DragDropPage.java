@@ -34,6 +34,7 @@ public class DragDropPage {
         return driver.findElement(columnB).getText();
     }
 
+    // Actions.dragAndDrop seems to be broken in html5, so this dragAndDrop is implemented through js
     public void dragAndDrop(WebElement src, WebElement target) {
         StringBuilder builder = new StringBuilder();
         String line;
