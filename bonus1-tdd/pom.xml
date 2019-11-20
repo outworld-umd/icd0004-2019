@@ -4,15 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>icd0004.taltech.ee</groupId>
+    <groupId>bonus1-tdd</groupId>
     <artifactId>bonus1-tdd</artifactId>
     <version>0.0.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>12</maven.compiler.source>
+        <maven.compiler.target>12</maven.compiler.target>
     </properties>
+
+    <build>
+        <sourceDirectory>src/java</sourceDirectory>
+        <testSourceDirectory>src/test</testSourceDirectory>
+    </build>
 
     <dependencies>
         <dependency>
@@ -28,7 +33,6 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>
