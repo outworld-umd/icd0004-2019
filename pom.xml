@@ -12,6 +12,7 @@
         <module>bonus1-tdd</module>
         <module>bonus2-ui</module>
         <module>bonus3-parallel</module>
+        <module>project</module>
     </modules>
 
     <dependencies>
