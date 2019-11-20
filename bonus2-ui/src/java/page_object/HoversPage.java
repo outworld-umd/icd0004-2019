@@ -1,4 +1,4 @@
-package gm.taltech.ee.page_object;
+package page_object;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;

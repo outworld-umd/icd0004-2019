@@ -1,5 +1,3 @@
-package tdd.greeting;
-
 import java.util.*;
 import java.util.stream.*;
 

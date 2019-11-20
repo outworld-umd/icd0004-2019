@@ -1,5 +1,4 @@
-package tdd.greeting;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +9,7 @@ public class GreeterTest {
     public void testStandardInput() {
         String name = "Bob";
 
-        assertEquals("Hello, Bob.", Greeter.greet(name));
+        Assert.assertEquals("Hello, Bob.", Greeter.greet(name));
     }
 
     @Test // Requirement 2

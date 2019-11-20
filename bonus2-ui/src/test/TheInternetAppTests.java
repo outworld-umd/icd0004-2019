@@ -1,6 +1,4 @@
-package gm.taltech.ee;
-
-import gm.taltech.ee.page_object.*;
+import page_object.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

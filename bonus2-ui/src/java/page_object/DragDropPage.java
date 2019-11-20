@@ -1,4 +1,4 @@
-package gm.taltech.ee.page_object;
+package page_object;
 
 import org.openqa.selenium.*;
 
@@ -39,7 +39,7 @@ public class DragDropPage {
         StringBuilder builder = new StringBuilder();
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("src/main/java/gm/taltech/ee/scripts/dnd.js"));
+            BufferedReader br = new BufferedReader(new FileReader("src/main/java/scripts/dnd.js"));
             while ((line = br.readLine()) != null) builder.append(line);
             String javaScript = builder.toString();
             javaScript += "$('#" + src.getAttribute("id") +
