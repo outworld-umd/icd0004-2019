@@ -54,18 +54,19 @@ public class FormAuthenticationPage {
     }
 
     public String getSuccessNotificationText() {
-        try {
-            return driver.findElement(successNotification).getText().replace("\n×", "");
-        } catch (ElementNotVisibleException e) {
-            return null;
-        }
+        return driver.findElement(successNotification).getText().replace("\n×", "");
     }
 
     public String getErrorNotificationText() {
-        try {
-            return driver.findElement(errorNotification).getText().replace("\n×", "");
-        } catch (ElementNotVisibleException e) {
-            return null;
-        }
+        return driver.findElement(errorNotification).getText().replace("\n×", "");
     }
+
+    public boolean isSuccessNotificationText(String text) {
+        return driver.findElement(successNotification).getText().replace("\n×", "").equals(text);
+    }
+
+    public boolean isErrorNotificationText(String text) {
+        return driver.findElement(errorNotification).getText().replace("\n×", "").equals(text);
+    }
+
 }

@@ -5,27 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>icd0004</groupId>
-    <artifactId>icd0004-2019</artifactId>
+    <artifactId>bonus3-parallel</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <modules>
-        <module>bonus1-tdd</module>
-        <module>bonus2-ui</module>
-        <module>bonus3-parallel</module>
-    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>12</maven.compiler.source>
+        <maven.compiler.target>12</maven.compiler.target>
+    </properties>
+
+    <build>
+        <testSourceDirectory>src/test</testSourceDirectory>
+    </build>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.truth</groupId>
-            <artifactId>truth</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
+            <groupId>icd0004</groupId>
+            <artifactId>bonus2-ui</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -50,4 +47,5 @@
             <version>3.7.1</version>
         </dependency>
     </dependencies>
+    
 </project>

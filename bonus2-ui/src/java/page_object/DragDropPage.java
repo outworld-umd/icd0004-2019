@@ -60,4 +60,9 @@ public class DragDropPage {
     public WebElement getOtherElement() {
         return driver.findElement(otherElement);
     }
+
+    public boolean isTheFirstElementsHeaderText(String headerText) {
+        return driver.findElement(columnA).findElement(By.tagName("header")).getText().equals(headerText);
+    }
+
 }

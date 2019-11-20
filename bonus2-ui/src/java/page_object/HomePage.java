@@ -15,6 +15,7 @@ public class HomePage {
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
+        this.driver.get("https://the-internet.herokuapp.com/");
     }
 
     public boolean isAt() {

@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="InternetAppTests">
+    <test name="ParallelTest" parallel="methods" thread-count="5">
+        <classes>
+            <class name="TheInternetAppTestsOne"/>
+            <class name="TheInternetAppTestsTwo"/>
+            <class name="TheInternetAppTestsThree"/>
+        </classes>
+    </test>
+</suite>
