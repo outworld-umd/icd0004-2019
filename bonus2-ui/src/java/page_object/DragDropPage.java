@@ -1,10 +1,17 @@
 package page_object;
 
+import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+
+import static java.lang.Thread.currentThread;
+import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Objects.requireNonNull;
+
 
 public class DragDropPage {
 
@@ -34,18 +41,16 @@ public class DragDropPage {
         return driver.findElement(columnB).getText();
     }
 
-    // Actions.dragAndDrop seems to be broken in html5, so this dragAndDrop is implemented through js
-    public void dragAndDrop(WebElement src, WebElement target) {
-        StringBuilder builder = new StringBuilder();
-        String line;
+    public void dragAndDrop(WebElement source, WebElement target) {
+        URL url = currentThread().getContextClassLoader().getResource("DragAndDrop.js");
         try {
-            BufferedReader br = new BufferedReader(new FileReader("src/main/java/scripts/dnd.js"));
-            while ((line = br.readLine()) != null) builder.append(line);
-            String javaScript = builder.toString();
-            javaScript += "$('#" + src.getAttribute("id") +
-                    "').simulateDragDrop({ dropTarget: '#" + target.getAttribute("id") + "'});";
-            ((JavascriptExecutor) driver).executeScript(javaScript);
-        } catch (IOException ignored) {}
+            String script = IOUtils.toString(requireNonNull(url), defaultCharset());
+            script += "simulateHTML5DragAndDrop(arguments[0], arguments[1])";
+            JavascriptExecutor executor = (JavascriptExecutor) driver;
+            executor.executeScript(script, source, target);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getTextFromColumns() {
