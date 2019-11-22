@@ -4,8 +4,6 @@ import weatherwise.WeatherReport;
 import weatherwise.WeatherWise;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.response.CurrentWeatherData;
-import weatherwise.exception.CityIsEmptyException;
-import weatherwise.exception.CurrentWeatherDataMissingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +29,7 @@ public class WeatherWiseMockTest {
 
     // Example of stubbing
     @Test
-    public void should_return_weather_report_for_city() throws CityIsEmptyException, CurrentWeatherDataMissingException {
+    public void should_return_weather_report_for_city() {
         String city = "Tallinn";
         CurrentWeatherData currentWeatherData = new CurrentWeatherData();
         currentWeatherData.setName(city);

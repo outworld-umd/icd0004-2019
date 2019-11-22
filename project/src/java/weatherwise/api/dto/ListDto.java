@@ -5,8 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MainDto {
-    private Double temp;
-    private Integer pressure;
-    private Integer humidity;
+public class ListDto {
+    private Long dt;
+    private MainDto main;
 }

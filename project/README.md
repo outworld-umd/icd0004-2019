@@ -51,7 +51,7 @@ Näide väljundfailist:
 
 ## Progress
 - [ ] 1. Unittestid
-- [ ] 2. Programmikood
+- [X] 2. Programmikood
 - [ ] 3. Faili lugemine/kirjutamine
 - [ ] 4. Mockimine
 - [ ] 5. Integratsiooni testid

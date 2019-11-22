@@ -5,7 +5,6 @@ import weatherwise.api.dto.MainDto;
 import lombok.Data;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-// jackson @JsonAutoDetect
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrentWeatherData {
