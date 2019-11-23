@@ -22,9 +22,7 @@ public class WeatherApi {
     }
 
     public ForecastData getForecastDataForCity(String cityName) {
-        ClientResponse r = getClientResponse(cityName, "forecast");
-        System.out.println(r);
-        return r.getEntity(ForecastData.class);
+        return getClientResponse(cityName, "forecast").getEntity(ForecastData.class);
     }
 
     private ClientResponse getClientResponse(String cityName, String type) {

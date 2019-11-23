@@ -33,7 +33,7 @@ public class WeatherApiMockTest {
 
     // Example of mocking 1: verifying that no interaction took place
     @Test
-    public void should_not_call_api_when_city_is_empty() throws CurrentWeatherDataMissingException {
+    public void should_not_call_api_when_city_is_empty() {
         try {
             weatherWise.getWeatherReportForCity(null);
         } catch (CityIsEmptyException e) {
@@ -45,14 +45,14 @@ public class WeatherApiMockTest {
 
     // Example of mocking 2: verifying exactly one interaction took place
     @Test
-    public void should_call_api_when_city_name_is_provided() throws CurrentWeatherDataMissingException {
+    public void should_call_api_when_city_name_is_provided() {
         String city = "Tallinn";
         when(weatherApiMock.getCurrentWeatherDataForCity(anyString()))
                 .thenReturn(mock(CurrentWeatherData.class));
 
         try {
             weatherWise.getWeatherReportForCity(city);
-        } catch (CityIsEmptyException e) {
+        } catch (CurrentWeatherDataMissingException e) {
             // ignored
         }
 

@@ -6,8 +6,11 @@ import weatherwise.api.dto.MainDto;
 import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.api.response.ForecastData;
 import weatherwise.exception.CityIsEmptyException;
+import weatherwise.exception.CityNotFoundException;
 import weatherwise.exception.CurrentWeatherDataMissingException;
+import weatherwise.exception.ForecastWeatherDataMissingException;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -21,21 +24,27 @@ public class WeatherWise {
         this.weatherApi = weatherApi;
     }
 
+    public void getWeatherReportFromFile(String path) throws IOException {
+
+    }
+
     public WeatherReport getWeatherReportForCity(String city) {
         WeatherReport weatherReport = new WeatherReport();
-        if (isCityMissing(city)) {
-            throw new CityIsEmptyException("City is empty");
-        } else {
-            CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-            ForecastData forecastData = weatherApi.getForecastDataForCity(city);
-            if (currentWeatherData != null && forecastData != null) {
-                weatherReport.setWeatherReportDetails(getWeatherReportDetails(currentWeatherData));
-                weatherReport.setCurrentWeatherReport(getCurrentWeatherReport(currentWeatherData));
-                weatherReport.setForecastReport(getForecastReports(forecastData));
-                return weatherReport;
-            } else {
-                throw new CurrentWeatherDataMissingException("Current weather data missing");
-            }
+        if (isCityMissing(city)) throw new CityIsEmptyException("City is empty");
+        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
+        ForecastData forecastData = weatherApi.getForecastDataForCity(city);
+        try {
+            if (isCityNotFound(currentWeatherData)) throw new CityNotFoundException("City not found");
+            weatherReport.setWeatherReportDetails(getWeatherReportDetails(currentWeatherData));
+            weatherReport.setCurrentWeatherReport(getCurrentWeatherReport(currentWeatherData));
+        } catch (NullPointerException e) {
+            throw new CurrentWeatherDataMissingException("Current weather data missing");
+        }
+        try {
+            weatherReport.setForecastReport(getForecastReports(forecastData));
+            return weatherReport;
+        } catch (NullPointerException e) {
+            throw new ForecastWeatherDataMissingException("Forecast weather data missing");
         }
     }
 
@@ -50,6 +59,7 @@ public class WeatherWise {
 
     private CurrentWeatherReport getCurrentWeatherReport(CurrentWeatherData currentWeatherData) {
         CurrentWeatherReport currentWeatherReport = new CurrentWeatherReport();
+        currentWeatherReport.setDate(sdf.format(new Date((currentWeatherData.getDt() + currentWeatherData.getTimezone()) * 1000)));
         currentWeatherReport.setTemperature(currentWeatherData.getMain().getTemp());
         currentWeatherReport.setHumidity(currentWeatherData.getMain().getHumidity());
         currentWeatherReport.setPressure(currentWeatherData.getMain().getPressure());
@@ -92,5 +102,9 @@ public class WeatherWise {
 
     private boolean isCityMissing(String city) {
         return city == null || city.isEmpty();
+    }
+
+    private boolean isCityNotFound(CurrentWeatherData currentWeatherData) {
+        return currentWeatherData.getMessage() != null;
     }
 }

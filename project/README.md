@@ -50,7 +50,7 @@ Näide väljundfailist:
 
 
 ## Progress
-- [ ] 1. Unittestid
+- [X] 1. Unittestid
 - [X] 2. Programmikood
 - [ ] 3. Faili lugemine/kirjutamine
 - [ ] 4. Mockimine

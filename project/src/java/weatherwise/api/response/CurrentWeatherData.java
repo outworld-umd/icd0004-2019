@@ -13,6 +13,7 @@ public class CurrentWeatherData {
     private String name;
     private String id;
     private Integer cod;
-    private String base;
     private String message;
+    private Long dt;
+    private Long timezone;
 }
