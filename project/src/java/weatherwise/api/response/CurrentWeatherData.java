@@ -1,9 +1,9 @@
 package weatherwise.api.response;
 
-import weatherwise.api.dto.CoordinatesDto;
-import weatherwise.api.dto.MainDto;
 import lombok.Data;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import weatherwise.api.dto.CoordinatesDto;
+import weatherwise.api.dto.MainDto;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

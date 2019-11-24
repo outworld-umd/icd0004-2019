@@ -52,9 +52,9 @@ Näide väljundfailist:
 ## Progress
 - [X] 1. Unittestid
 - [X] 2. Programmikood
-- [ ] 3. Faili lugemine/kirjutamine
-- [ ] 4. Mockimine
-- [ ] 5. Integratsiooni testid
+- [X] 3. Faili lugemine/kirjutamine
+- [X] 4. Mockimine
+- [X] 5. Integratsiooni testid
 - [X] 6. UI testid
 
 ## Etapid

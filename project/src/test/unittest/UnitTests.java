@@ -3,24 +3,28 @@ package unittest;
 import org.junit.Before;
 import org.junit.Test;
 import weatherwise.ForecastReport;
+import weatherwise.WeatherFile;
 import weatherwise.WeatherReport;
 import weatherwise.WeatherWise;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.dto.CoordinatesDto;
 import weatherwise.api.response.CurrentWeatherData;
+import weatherwise.exception.CitiesFileNotFoundException;
 import weatherwise.exception.CityIsEmptyException;
 import weatherwise.exception.CityNotFoundException;
 import weatherwise.exception.FileIsEmptyException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.function.Function;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 
 public class UnitTests {
@@ -28,6 +32,7 @@ public class UnitTests {
     private static String city;
     private static WeatherApi weatherApi;
     private static WeatherWise weatherWise;
+    private static WeatherFile weatherFile;
 
     private static Function<String, String> capitalizeFunc = s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
 
@@ -36,6 +41,7 @@ public class UnitTests {
         city = "Tallinn";
         weatherApi = new WeatherApi();
         weatherWise = new WeatherWise(weatherApi);
+        weatherFile = new WeatherFile();
     }
 
     private String getDateString(CurrentWeatherData currentWeatherData, int dayDiffFromToday) {
@@ -124,7 +130,7 @@ public class UnitTests {
         WeatherReport weatherReport = weatherWise.getWeatherReportForCity(city);
         CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
 
-        String today = getDateString(currentWeatherData,0);
+        String today = getDateString(currentWeatherData, 0);
 
         assertEquals(today, weatherReport.getCurrentWeatherReport().getDate());
     }
@@ -144,44 +150,50 @@ public class UnitTests {
         WeatherReport weatherReport = weatherWise.getWeatherReportForCity(city);
         CurrentWeatherData cwd = weatherApi.getCurrentWeatherDataForCity(city);
 
-        String[] expectedDates = new String[] {getDateString(cwd, 1), getDateString(cwd, 2), getDateString(cwd, 3)};
+        String[] expectedDates = new String[]{getDateString(cwd, 1), getDateString(cwd, 2), getDateString(cwd, 3)};
         String[] actualDates = weatherReport.getForecastReport().stream().map(ForecastReport::getDate).toArray(String[]::new);
 
         assertArrayEquals(expectedDates, actualDates);
     }
 
-    @Test(expected = FileNotFoundException.class)
-    public void shouldThrowFileNotFoundExceptionIfNoFile() throws IOException {
+    @Test(expected = CitiesFileNotFoundException.class)
+    public void shouldThrowFileNotFoundExceptionIfNoFile() {
         File file = new File("gibberish.txt");
         weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test(expected = FileIsEmptyException.class)
-    public void shouldThrowFileIsEmptyExceptionIfFileIsEmpty() throws IOException {
+    public void shouldThrowFileIsEmptyExceptionIfFileIsEmpty() {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource("empty_input.txt")).getFile());
         weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test
-    public void shouldCreateOneOutputFileIfOneCityInFile() throws IOException {
+    public void shouldGetOneCityIfOneCityInFile() {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource("one_city.txt")).getFile());
-        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
+        List<String> cities = weatherFile.getCitiesFromFile(file.getAbsolutePath());
+
+        assertEquals(1, cities.size());
     }
 
     @Test
-    public void shouldCreateMultipleOutputFilesIfMultipleCitiesInFile() throws IOException {
+    public void shouldGetMultipleCitiesIfMultipleCitiesInFile() {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource("multiple_cities.txt")).getFile());
-        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
+        List<String> cities = weatherFile.getCitiesFromFile(file.getAbsolutePath());
+
+        assertEquals(3, cities.size());
     }
 
     @Test
-    public void shouldCreateSomeFilesIfSomeCitiesAreIncorrect() throws IOException {
+    public void shouldGetSomeCitiesIfSomeLinesAreEmpty() {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource("right_wrong_cities.txt")).getFile());
-        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
+        List<String> cities = weatherFile.getCitiesFromFile(file.getAbsolutePath());
+
+        assertEquals(6, cities.size());
     }
 
 }

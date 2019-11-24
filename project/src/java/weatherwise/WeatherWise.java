@@ -1,58 +1,54 @@
 package weatherwise;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.dto.ListDto;
 import weatherwise.api.dto.MainDto;
 import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.api.response.ForecastData;
-import weatherwise.exception.*;
+import weatherwise.exception.CityIsEmptyException;
+import weatherwise.exception.CityNotFoundException;
+import weatherwise.exception.CurrentWeatherDataMissingException;
+import weatherwise.exception.ForecastWeatherDataMissingException;
 
-import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WeatherWise {
 
-    private WeatherApi weatherApi;
     private static SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+    private WeatherApi weatherApi;
+    private WeatherFile weatherFile;
 
     public WeatherWise(WeatherApi weatherApi) {
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         this.weatherApi = weatherApi;
+        this.weatherFile = new WeatherFile();
     }
 
-    public void getWeatherReportFromFile(String path) throws IOException {
-        ArrayList<String> cityList = getCitiesFromFile(path);
-        Gson g = new GsonBuilder().create();
-        for (String city : cityList) {
+    public WeatherWise(WeatherApi weatherApi, WeatherFile weatherFile) {
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        this.weatherApi = weatherApi;
+        this.weatherFile = weatherFile;
+    }
+
+    public List<WeatherReport> getWeatherReportFromFile(String path) {
+        List<String> cityList = weatherFile.getCitiesFromFile(path);
+        List<WeatherReport> weatherReports = cityList.stream().map(c -> {
             try {
-                WeatherReport weatherReport = getWeatherReportForCity(city);
-                Writer writer = new FileWriter("src/outputs/" + city + ".json");
-                g.toJson(weatherReport, writer);
-                writer.flush();
-                writer.close();
-            } catch (CityNotFoundException ignored) {}
-        }
-    }
-
-    private ArrayList<String> getCitiesFromFile(String path) throws IOException {
-        ArrayList<String> cityList = new ArrayList<>();
-        String line;
-        BufferedReader br = new BufferedReader(new FileReader(path));
-        while ((line = br.readLine()) != null) if (!line.isEmpty()) cityList.add(line);
-        if (cityList.isEmpty()) throw new FileIsEmptyException("File is empty");
-        return cityList;
+                return getWeatherReportForCity(c);
+            } catch (RuntimeException e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        weatherReports.forEach(r -> weatherFile.writeReportsToFile(r));
+        return weatherReports;
     }
 
     public WeatherReport getWeatherReportForCity(String city) {
         WeatherReport weatherReport = new WeatherReport();
         if (isCityMissing(city)) throw new CityIsEmptyException("City is empty");
         CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         try {
             if (isCityNotFound(currentWeatherData)) throw new CityNotFoundException("City not found");
             weatherReport.setWeatherReportDetails(getWeatherReportDetails(currentWeatherData));
@@ -60,6 +56,7 @@ public class WeatherWise {
         } catch (NullPointerException e) {
             throw new CurrentWeatherDataMissingException("Current weather data missing");
         }
+        ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         try {
             weatherReport.setForecastReport(getForecastReports(forecastData));
             return weatherReport;
