@@ -1,18 +1,19 @@
 package weatherwise;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.dto.ListDto;
 import weatherwise.api.dto.MainDto;
 import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.api.response.ForecastData;
-import weatherwise.exception.CityIsEmptyException;
-import weatherwise.exception.CityNotFoundException;
-import weatherwise.exception.CurrentWeatherDataMissingException;
-import weatherwise.exception.ForecastWeatherDataMissingException;
+import weatherwise.exception.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WeatherWise {
 
@@ -25,7 +26,26 @@ public class WeatherWise {
     }
 
     public void getWeatherReportFromFile(String path) throws IOException {
+        ArrayList<String> cityList = getCitiesFromFile(path);
+        Gson g = new GsonBuilder().create();
+        for (String city : cityList) {
+            try {
+                WeatherReport weatherReport = getWeatherReportForCity(city);
+                Writer writer = new FileWriter("src/outputs/" + city + ".json");
+                g.toJson(weatherReport, writer);
+                writer.flush();
+                writer.close();
+            } catch (CityNotFoundException ignored) {}
+        }
+    }
 
+    private ArrayList<String> getCitiesFromFile(String path) throws IOException {
+        ArrayList<String> cityList = new ArrayList<>();
+        String line;
+        BufferedReader br = new BufferedReader(new FileReader(path));
+        while ((line = br.readLine()) != null) if (!line.isEmpty()) cityList.add(line);
+        if (cityList.isEmpty()) throw new FileIsEmptyException("File is empty");
+        return cityList;
     }
 
     public WeatherReport getWeatherReportForCity(String city) {

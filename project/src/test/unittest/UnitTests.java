@@ -12,7 +12,9 @@ import weatherwise.exception.CityIsEmptyException;
 import weatherwise.exception.CityNotFoundException;
 import weatherwise.exception.FileIsEmptyException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -149,28 +151,37 @@ public class UnitTests {
     }
 
     @Test(expected = FileNotFoundException.class)
-    public void shouldThrowFileNotFoundExceptionIfNoFile() {
-
+    public void shouldThrowFileNotFoundExceptionIfNoFile() throws IOException {
+        File file = new File("gibberish.txt");
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test(expected = FileIsEmptyException.class)
-    public void shouldThrowFileIsEmptyExceptionIfFileIsEmpty() {
-
+    public void shouldThrowFileIsEmptyExceptionIfFileIsEmpty() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource("empty_input.txt")).getFile());
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test
-    public void shouldCreateOneOutputFileIfOneCityInFile() {
-
+    public void shouldCreateOneOutputFileIfOneCityInFile() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource("one_city.txt")).getFile());
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test
-    public void shouldCreateMultipleOutputFilesIfMultipleCitiesInFile() {
-
+    public void shouldCreateMultipleOutputFilesIfMultipleCitiesInFile() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource("multiple_cities.txt")).getFile());
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
     @Test
-    public void shouldCreateSomeFilesIfSomeCitiesAreIncorrect() {
-
+    public void shouldCreateSomeFilesIfSomeCitiesAreIncorrect() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource("right_wrong_cities.txt")).getFile());
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
     }
 
 }
