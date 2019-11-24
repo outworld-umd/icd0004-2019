@@ -4,7 +4,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import weatherwise.api.WeatherApi;
-import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.api.response.ForecastData;
 
 import static org.hamcrest.CoreMatchers.is;

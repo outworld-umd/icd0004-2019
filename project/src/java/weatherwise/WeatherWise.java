@@ -1,5 +1,7 @@
 package weatherwise;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.dto.ListDto;
 import weatherwise.api.dto.MainDto;
@@ -15,6 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WeatherWise {
+
+    private Logger logger = LoggerFactory.getLogger(WeatherWise.class);
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
     private WeatherApi weatherApi;
@@ -47,20 +51,29 @@ public class WeatherWise {
 
     public WeatherReport getWeatherReportForCity(String city) {
         WeatherReport weatherReport = new WeatherReport();
-        if (isCityMissing(city)) throw new CityIsEmptyException("City is empty");
+        if (isCityMissing(city)) {
+            logger.error("Error CityIsEmptyException occurred when tried to get info for city '{}'", city);
+            throw new CityIsEmptyException("City is empty");
+        }
         CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
+        if (isCityNotFound(currentWeatherData)) {
+            logger.error("Error CityNotFoundException occurred when tried to get info for city '{}'", city);
+            throw new CityNotFoundException("City not found");
+        }
         try {
-            if (isCityNotFound(currentWeatherData)) throw new CityNotFoundException("City not found");
             weatherReport.setWeatherReportDetails(getWeatherReportDetails(currentWeatherData));
             weatherReport.setCurrentWeatherReport(getCurrentWeatherReport(currentWeatherData));
         } catch (NullPointerException e) {
+            logger.error("NullPointerException occurred while processing '{}' for city '{}'", currentWeatherData, city);
             throw new CurrentWeatherDataMissingException("Current weather data missing");
         }
         ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         try {
             weatherReport.setForecastReport(getForecastReports(forecastData));
+            logger.info("Successfully got WeatherReport for city '{}'", city);
             return weatherReport;
         } catch (NullPointerException e) {
+            logger.error("NullPointerException occurred while processing '{}' for city '{}'", forecastData, city);
             throw new ForecastWeatherDataMissingException("Forecast weather data missing");
         }
     }
@@ -111,9 +124,9 @@ public class WeatherWise {
 
     private ForecastWeatherReport getAverageWeatherForDay(ArrayList<MainDto> weatherList) {
         ForecastWeatherReport weather = new ForecastWeatherReport();
-        weather.setTemperature(weatherList.stream().mapToDouble(MainDto::getTemp).average().orElse(0));
-        weather.setHumidity((int) weatherList.stream().mapToDouble(MainDto::getHumidity).average().orElse(0));
-        weather.setPressure((int) weatherList.stream().mapToDouble(MainDto::getPressure).average().orElse(0));
+        weather.setTemperature(weatherList.stream().mapToDouble(MainDto::getTemp).average().orElseThrow());
+        weather.setHumidity((int) weatherList.stream().mapToDouble(MainDto::getHumidity).average().orElseThrow());
+        weather.setPressure((int) weatherList.stream().mapToDouble(MainDto::getPressure).average().orElseThrow());
         return weather;
     }
 

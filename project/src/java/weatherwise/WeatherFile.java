@@ -1,6 +1,8 @@
 package weatherwise;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weatherwise.exception.CitiesFileNotFoundException;
 import weatherwise.exception.FileIsEmptyException;
 
@@ -10,7 +12,8 @@ import java.util.List;
 
 public class WeatherFile {
 
-    private static Gson g = new Gson();
+    private Logger logger = LoggerFactory.getLogger(WeatherFile.class);
+    private Gson g = new Gson();
 
     public List<String> getCitiesFromFile(String path) {
         ArrayList<String> cityList = new ArrayList<>();
@@ -19,10 +22,14 @@ public class WeatherFile {
             BufferedReader br = new BufferedReader(new FileReader(path));
             while ((line = br.readLine()) != null) if (!line.isEmpty()) cityList.add(line);
         } catch (IOException e) {
-            // logging goes here
+            logger.error("Error {} occurred while reading file {}", e.getClass(), path);
             throw new CitiesFileNotFoundException("File not found");
         }
-        if (cityList.isEmpty()) throw new FileIsEmptyException("File is empty");
+        if (cityList.isEmpty()) {
+            logger.error("Input file {} was empty", path);
+            throw new FileIsEmptyException("File is empty");
+        }
+        logger.info("Retrieved {} cities from file {}", cityList.size(), path);
         return cityList;
     }
 
@@ -30,8 +37,9 @@ public class WeatherFile {
         try (Writer writer = new FileWriter("src/outputs/" + weatherReport.getWeatherReportDetails().getCity() + ".json")) {
             writer.append(g.toJson(weatherReport));
             writer.flush();
+            logger.info("Writing file for city {} was successful. File path: {}", weatherReport.getWeatherReportDetails().getCity(), "src/outputs/" + weatherReport.getWeatherReportDetails().getCity() + ".json");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error {} occurred while writing file for city '{}'", e, weatherReport.getWeatherReportDetails().getCity());
         }
 
     }
