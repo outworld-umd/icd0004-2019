@@ -1,11 +1,14 @@
 package integration;
 
+import com.sun.jersey.api.client.ClientResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.api.response.ForecastData;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.*;
 
 public class IntegrationTests {
@@ -18,43 +21,39 @@ public class IntegrationTests {
     }
 
     @Test
-    public void shouldReturnCode200IfSuccessful() {
+    public void shouldReturnCode200IfCurrentWeatherReportSuccessful() {
         String city = "Tallinn";
 
-        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        int code = currentWeatherData.getCod();
+        ClientResponse response = weatherApi.getCurrentWeatherResponse(city);
 
-        assertEquals(200, code);
+        assertThat(response.getStatus(), is(200));
     }
 
     @Test
-    public void shouldReturnNullMessageIfSuccessful() {
+    public void shouldReturnCurrentWeatherReportCode404IfNoCity() {
+        String city = "Reval";
+
+        ClientResponse response = weatherApi.getCurrentWeatherResponse(city);
+
+        assertThat(response.getStatus(), is(404));
+    }
+
+    @Test
+    public void shouldReturnCode200IfForecastReportSuccessful() {
         String city = "Tallinn";
 
-        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        String message = currentWeatherData.getMessage();
+        ClientResponse response = weatherApi.getForecastResponse(city);
 
-        assertNull(message);
+        assertThat(response.getStatus(), is(200));
     }
 
     @Test
-    public void shouldReturnCode404IfNoCity() {
+    public void shouldReturnForecastReportCode404IfNoCity() {
         String city = "Reval";
 
-        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        int code = currentWeatherData.getCod();
+        ClientResponse response = weatherApi.getForecastResponse(city);
 
-        assertEquals(404, code);
-    }
-
-    @Test
-    public void shouldReturnNoCityMessageIfNotFound() {
-        String city = "Reval";
-
-        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        String message = currentWeatherData.getMessage();
-
-        assertEquals("city not found", message);
+        assertThat(response.getStatus(), is(404));
     }
 
     @Test
@@ -64,7 +63,7 @@ public class IntegrationTests {
         ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         Double temperature = forecastData.getList().get(0).getMain().getTemp();
 
-        assertNotNull(temperature);
+        assertThat(temperature, is(notNullValue()));
     }
 
     @Test
@@ -74,7 +73,7 @@ public class IntegrationTests {
         ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         Integer humidity = forecastData.getList().get(0).getMain().getHumidity();
 
-        assertNotNull(humidity);
+        assertThat(humidity, is(notNullValue()));
     }
 
     @Test
@@ -84,7 +83,7 @@ public class IntegrationTests {
         ForecastData forecastData = weatherApi.getForecastDataForCity(city);
         Integer pressure = forecastData.getList().get(0).getMain().getPressure();
 
-        assertNotNull(pressure);
+        assertThat(pressure, is(notNullValue()));
     }
 
 }

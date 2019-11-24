@@ -25,15 +25,24 @@ public class WeatherApi {
     }
 
     public CurrentWeatherData getCurrentWeatherDataForCity(String cityName) {
-        return getClientResponse(cityName, "weather").getEntity(CurrentWeatherData.class);
+        return getCurrentWeatherResponse(cityName).getEntity(CurrentWeatherData.class);
     }
 
     public ForecastData getForecastDataForCity(String cityName) {
-        return getClientResponse(cityName, "forecast").getEntity(ForecastData.class);
+        return getForecastResponse(cityName).getEntity(ForecastData.class);
     }
 
-    private ClientResponse getClientResponse(String cityName, String type) {
-        String resourceUrl = BASE_URL + "/" + type;
+    public ClientResponse getCurrentWeatherResponse(String cityName) {
+        String resourceUrl = BASE_URL + "/weather";
+        return client.resource(resourceUrl)
+                .queryParam("q", cityName)
+                .queryParam("APPID", APPID)
+                .queryParam("units", "metric")
+                .get(ClientResponse.class);
+    }
+
+    public ClientResponse getForecastResponse(String cityName) {
+        String resourceUrl = BASE_URL + "/forecast";
         return client.resource(resourceUrl)
                 .queryParam("q", cityName)
                 .queryParam("APPID", APPID)
