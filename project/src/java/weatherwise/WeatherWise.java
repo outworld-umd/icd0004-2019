@@ -78,7 +78,7 @@ public class WeatherWise {
         }
     }
 
-    private WeatherReportDetails getWeatherReportDetails(CurrentWeatherData currentWeatherData) {
+    public WeatherReportDetails getWeatherReportDetails(CurrentWeatherData currentWeatherData) {
         WeatherReportDetails weatherReportDetails = new WeatherReportDetails();
         weatherReportDetails.setCity(currentWeatherData.getName());
         String lat = currentWeatherData.getCoord().getLat().toString();
@@ -87,7 +87,7 @@ public class WeatherWise {
         return weatherReportDetails;
     }
 
-    private CurrentWeatherReport getCurrentWeatherReport(CurrentWeatherData currentWeatherData) {
+    public CurrentWeatherReport getCurrentWeatherReport(CurrentWeatherData currentWeatherData) {
         CurrentWeatherReport currentWeatherReport = new CurrentWeatherReport();
         currentWeatherReport.setDate(sdf.format(new Date((currentWeatherData.getDt() + currentWeatherData.getTimezone()) * 1000)));
         currentWeatherReport.setTemperature(currentWeatherData.getMain().getTemp());
@@ -96,7 +96,7 @@ public class WeatherWise {
         return currentWeatherReport;
     }
 
-    private ArrayList<ForecastReport> getForecastReports(ForecastData fData) {
+    public ArrayList<ForecastReport> getForecastReports(ForecastData fData) {
         ArrayList<ForecastReport> forecastReport = new ArrayList<>();
         LinkedHashMap<String, ArrayList<MainDto>> map = getWeatherMap(fData);
         map.forEach((k, v) -> {
@@ -108,7 +108,7 @@ public class WeatherWise {
         return forecastReport;
     }
 
-    private LinkedHashMap<String, ArrayList<MainDto>> getWeatherMap(ForecastData forecastData) {
+    public LinkedHashMap<String, ArrayList<MainDto>> getWeatherMap(ForecastData forecastData) {
         LinkedHashMap<String, ArrayList<MainDto>> map = new LinkedHashMap<>();
         String today = sdf.format(new Date(System.currentTimeMillis() + forecastData.getTimezone() * 1000));
         for (ListDto dto : forecastData.getList()) {
@@ -122,7 +122,7 @@ public class WeatherWise {
         return map;
     }
 
-    private ForecastWeatherReport getAverageWeatherForDay(ArrayList<MainDto> weatherList) {
+    public ForecastWeatherReport getAverageWeatherForDay(ArrayList<MainDto> weatherList) {
         ForecastWeatherReport weather = new ForecastWeatherReport();
         weather.setTemperature(weatherList.stream().mapToDouble(MainDto::getTemp).average().orElseThrow());
         weather.setHumidity((int) weatherList.stream().mapToDouble(MainDto::getHumidity).average().orElseThrow());

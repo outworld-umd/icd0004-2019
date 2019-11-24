@@ -2,12 +2,10 @@ package unittest;
 
 import org.junit.Before;
 import org.junit.Test;
-import weatherwise.ForecastReport;
-import weatherwise.WeatherFile;
-import weatherwise.WeatherReport;
-import weatherwise.WeatherWise;
+import weatherwise.*;
 import weatherwise.api.WeatherApi;
 import weatherwise.api.dto.CoordinatesDto;
+import weatherwise.api.dto.MainDto;
 import weatherwise.api.response.CurrentWeatherData;
 import weatherwise.exception.CitiesFileNotFoundException;
 import weatherwise.exception.CityIsEmptyException;
@@ -17,10 +15,7 @@ import weatherwise.exception.FileIsEmptyException;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -35,6 +30,7 @@ public class UnitTests {
     private static WeatherFile weatherFile;
 
     private static Function<String, String> capitalizeFunc = s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    private static final double DELTA = 0.0001;
 
     @Before
     public void setUp() {
@@ -42,13 +38,6 @@ public class UnitTests {
         weatherApi = new WeatherApi();
         weatherWise = new WeatherWise(weatherApi);
         weatherFile = new WeatherFile();
-    }
-
-    private String getDateString(CurrentWeatherData currentWeatherData, int dayDiffFromToday) {
-        DateFormat format = new SimpleDateFormat("YYYY-MM-dd");
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date todayDate = new Date(System.currentTimeMillis() + (currentWeatherData.getTimezone() + dayDiffFromToday * 86400) * 1000);
-        return format.format(todayDate);
     }
 
     @Test(expected = CityIsEmptyException.class)
@@ -83,13 +72,15 @@ public class UnitTests {
 
     @Test
     public void coordinatesAndOrderShouldBeCorrectInWeatherReport() {
-        WeatherReport weatherReport = weatherWise.getWeatherReportForCity(city);
-        CurrentWeatherData currentWeatherData = weatherApi.getCurrentWeatherDataForCity(city);
-        CoordinatesDto coordinates = currentWeatherData.getCoord();
+        CurrentWeatherData currentWeatherData = new CurrentWeatherData();
+        CoordinatesDto coords = new CoordinatesDto();
+        coords.setLon(123.23);
+        coords.setLat(-421.0);
+        currentWeatherData.setCoord(coords);
 
-        String expectedCoordinates = coordinates.getLat().toString() + "," + coordinates.getLon().toString();
+        WeatherReportDetails weatherReportDetails = weatherWise.getWeatherReportDetails(currentWeatherData);
 
-        assertEquals(expectedCoordinates, weatherReport.getWeatherReportDetails().getCoordinates());
+        assertEquals("-421.0,123.23", weatherReportDetails.getCoordinates());
     }
 
     @Test
@@ -194,6 +185,56 @@ public class UnitTests {
         List<String> cities = weatherFile.getCitiesFromFile(file.getAbsolutePath());
 
         assertEquals(6, cities.size());
+    }
+
+    @Test
+    public void forecastTemperatureShouldBeAverage() {
+        ArrayList<MainDto> weatherData = getForecastDataForTest();
+
+        ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
+
+        assertEquals(-10D, forecastReports.getTemperature(), DELTA);
+    }
+
+    @Test
+    public void forecastHumidityShouldBeAverage() {
+        ArrayList<MainDto> weatherData = getForecastDataForTest();
+
+        ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
+
+        assertEquals(500, (int) forecastReports.getHumidity());
+    }
+
+    @Test
+    public void forecastPressureShouldBeAverage() {
+        ArrayList<MainDto> weatherData = getForecastDataForTest();
+
+        ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
+
+        assertEquals(1025, (int) forecastReports.getPressure());
+    }
+
+    private String getDateString(CurrentWeatherData currentWeatherData, int dayDiffFromToday) {
+        DateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date todayDate = new Date(System.currentTimeMillis() + (currentWeatherData.getTimezone() + dayDiffFromToday * 86400) * 1000);
+        return format.format(todayDate);
+    }
+
+    private ArrayList<MainDto> getForecastDataForTest() {
+        MainDto main1 = new MainDto();
+        MainDto main2 = new MainDto();
+        MainDto main3 = new MainDto();
+        main1.setTemp(-20.0);
+        main2.setTemp(-10.0);
+        main3.setTemp(0.0);
+        main1.setHumidity(400);
+        main2.setHumidity(500);
+        main3.setHumidity(600);
+        main1.setPressure(1000);
+        main2.setPressure(1025);
+        main3.setPressure(1050);
+        return new ArrayList<>(Arrays.asList(main1, main2, main3));
     }
 
 }
