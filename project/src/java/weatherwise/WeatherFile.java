@@ -22,7 +22,7 @@ public class WeatherFile {
             BufferedReader br = new BufferedReader(new FileReader(path));
             while ((line = br.readLine()) != null) if (!line.isEmpty()) cityList.add(line);
         } catch (IOException e) {
-            logger.error("Error {} occurred while reading file {}", e.getClass(), path);
+            logger.error("Error {} occurred while reading file {}", e, path);
             throw new CitiesFileNotFoundException("File not found");
         }
         if (cityList.isEmpty()) {
@@ -34,10 +34,10 @@ public class WeatherFile {
     }
 
     public void writeReportsToFile(WeatherReport weatherReport) {
-        try (Writer writer = new FileWriter("src/outputs/" + weatherReport.getWeatherReportDetails().getCity() + ".json")) {
+        try (Writer writer = new FileWriter(weatherReport.getWeatherReportDetails().getCity() + ".json")) {
             writer.append(g.toJson(weatherReport));
             writer.flush();
-            logger.info("Writing file for city {} was successful. File path: {}", weatherReport.getWeatherReportDetails().getCity(), "src/outputs/" + weatherReport.getWeatherReportDetails().getCity() + ".json");
+            logger.info("Writing file was successful. File {}.json created", weatherReport.getWeatherReportDetails().getCity());
         } catch (IOException e) {
             logger.error("Error {} occurred while writing file for city '{}'", e, weatherReport.getWeatherReportDetails().getCity());
         }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ForecastWeatherReport {
-    private Double temperature;
-    private Integer humidity;
-    private Integer pressure;
+    private Long temperature;
+    private Long humidity;
+    private Long pressure;
 }

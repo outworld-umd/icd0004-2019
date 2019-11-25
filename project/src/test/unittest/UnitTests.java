@@ -30,7 +30,6 @@ public class UnitTests {
     private static WeatherFile weatherFile;
 
     private static Function<String, String> capitalizeFunc = s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
-    private static final double DELTA = 0.0001;
 
     @Before
     public void setUp() {
@@ -188,12 +187,19 @@ public class UnitTests {
     }
 
     @Test
+    public void shouldSuccessfullyCreateFilesWithWeatherReport() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource("multiple_cities.txt")).getFile());
+        weatherWise.getWeatherReportFromFile(file.getAbsolutePath());
+    }
+
+    @Test
     public void forecastTemperatureShouldBeAverage() {
         ArrayList<MainDto> weatherData = getForecastDataForTest();
 
         ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
 
-        assertEquals(-10D, forecastReports.getTemperature(), DELTA);
+        assertEquals(-10, (long) forecastReports.getTemperature());
     }
 
     @Test
@@ -202,7 +208,7 @@ public class UnitTests {
 
         ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
 
-        assertEquals(500, (int) forecastReports.getHumidity());
+        assertEquals(500, (long) forecastReports.getHumidity());
     }
 
     @Test
@@ -211,7 +217,7 @@ public class UnitTests {
 
         ForecastWeatherReport forecastReports = weatherWise.getAverageWeatherForDay(weatherData);
 
-        assertEquals(1025, (int) forecastReports.getPressure());
+        assertEquals(1025, (long) forecastReports.getPressure());
     }
 
     private String getDateString(CurrentWeatherData currentWeatherData, int dayDiffFromToday) {

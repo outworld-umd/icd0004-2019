@@ -12,6 +12,7 @@ import weatherwise.exception.CityNotFoundException;
 import weatherwise.exception.CurrentWeatherDataMissingException;
 import weatherwise.exception.ForecastWeatherDataMissingException;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +24,11 @@ public class WeatherWise {
     private static SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
     private WeatherApi weatherApi;
     private WeatherFile weatherFile;
+
+    public static void main(String[] args) {
+        WeatherWise weatherWise = new WeatherWise(new WeatherApi());
+        System.out.println(weatherWise.getWeatherReportForCity("Tallinn"));
+    }
 
     public WeatherWise(WeatherApi weatherApi) {
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -87,7 +93,7 @@ public class WeatherWise {
         return weatherReportDetails;
     }
 
-    public CurrentWeatherReport getCurrentWeatherReport(CurrentWeatherData currentWeatherData) {
+    private CurrentWeatherReport getCurrentWeatherReport(CurrentWeatherData currentWeatherData) {
         CurrentWeatherReport currentWeatherReport = new CurrentWeatherReport();
         currentWeatherReport.setDate(sdf.format(new Date((currentWeatherData.getDt() + currentWeatherData.getTimezone()) * 1000)));
         currentWeatherReport.setTemperature(currentWeatherData.getMain().getTemp());
@@ -96,7 +102,7 @@ public class WeatherWise {
         return currentWeatherReport;
     }
 
-    public ArrayList<ForecastReport> getForecastReports(ForecastData fData) {
+    private ArrayList<ForecastReport> getForecastReports(ForecastData fData) {
         ArrayList<ForecastReport> forecastReport = new ArrayList<>();
         LinkedHashMap<String, ArrayList<MainDto>> map = getWeatherMap(fData);
         map.forEach((k, v) -> {
@@ -108,7 +114,7 @@ public class WeatherWise {
         return forecastReport;
     }
 
-    public LinkedHashMap<String, ArrayList<MainDto>> getWeatherMap(ForecastData forecastData) {
+    private LinkedHashMap<String, ArrayList<MainDto>> getWeatherMap(ForecastData forecastData) {
         LinkedHashMap<String, ArrayList<MainDto>> map = new LinkedHashMap<>();
         String today = sdf.format(new Date(System.currentTimeMillis() + forecastData.getTimezone() * 1000));
         for (ListDto dto : forecastData.getList()) {
@@ -124,9 +130,9 @@ public class WeatherWise {
 
     public ForecastWeatherReport getAverageWeatherForDay(ArrayList<MainDto> weatherList) {
         ForecastWeatherReport weather = new ForecastWeatherReport();
-        weather.setTemperature(weatherList.stream().mapToDouble(MainDto::getTemp).average().orElseThrow());
-        weather.setHumidity((int) weatherList.stream().mapToDouble(MainDto::getHumidity).average().orElseThrow());
-        weather.setPressure((int) weatherList.stream().mapToDouble(MainDto::getPressure).average().orElseThrow());
+        weather.setTemperature(Math.round(weatherList.stream().mapToDouble(MainDto::getTemp).average().orElseThrow()));
+        weather.setHumidity(Math.round(weatherList.stream().mapToDouble(MainDto::getHumidity).average().orElseThrow()));
+        weather.setPressure(Math.round(weatherList.stream().mapToDouble(MainDto::getPressure).average().orElseThrow()));
         return weather;
     }
 
