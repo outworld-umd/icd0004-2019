@@ -12,7 +12,6 @@ import weatherwise.exception.CityNotFoundException;
 import weatherwise.exception.CurrentWeatherDataMissingException;
 import weatherwise.exception.ForecastWeatherDataMissingException;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +27,12 @@ public class WeatherWise {
     public static void main(String[] args) {
         WeatherWise weatherWise = new WeatherWise(new WeatherApi());
         System.out.println(weatherWise.getWeatherReportForCity("Tallinn"));
+    }
+
+    public WeatherWise() {
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        this.weatherApi = new WeatherApi();
+        this.weatherFile = new WeatherFile();
     }
 
     public WeatherWise(WeatherApi weatherApi) {
