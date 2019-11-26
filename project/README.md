@@ -1,10 +1,21 @@
-# Projekt
-Rakendus, mis loeb sisse failist linnade nimed ja tagastab eraldi faili:
-- hetke temperatuur
-- 3 päeva ilmaennustusest leida iga päeva kohta keskmised: temp, niiskus ja õhurõhk. **NB!** jooksvat päeva ei ole vaja arvestada, ehk ennustust on vaja homse, ülehomse ja üleülehomse kohta.
-- Koordinaadid kujul lat,lon, nt "59.44,24.75"
-- Temperatuuri ühikuks võtke Celsius
-- Kasutage nt OpenWeatherMap API-sid (vt allpool 2. etapi juures olev link)
+# WeatherWise
+## Kirjeldus
+WeatherWise on rakendus, mis loeb sisse failist linnade nimed ja tagastab iga linna kohta eraldi ```{linna_nimi}.json``` faili, mis koosneb järgmistest andmetest:
+- ```weatherReportDetails``` - ilmateate detailid;
+    - ```city``` - linn, mille kohta tagastati ilmateade;
+    - ```coordinates``` - linna koordinaadid;
+    - ```temperatureUnit``` - temperatuuri ühik;
+- ```currentWeatherReport``` - hetkeilma informatsioon;
+    - ```date``` - tänane päev;
+    - ```temperature``` - temperatuur hetkel;
+    - ```humidity``` - õhuniiskus hetkel;
+    - ```pressure``` - õhurõhk hetkel;
+- ```forecastReport``` - ilmaprognoos 3 päevaks;
+    - ```date``` - päev, milleks koostati prognoos;
+    - ```weather``` - ilmaprognoos selleks päevaks;
+        - ```temperature``` - temperatuur (päeva keskmine);
+        - ```humidity``` - õhuniiskus (päeva keskmine);
+        - ```pressure``` - õhurõhk (päeva keskmine).
 
 Näide väljundfailist:
 ```json
@@ -48,19 +59,37 @@ Näide väljundfailist:
   ]
 }
 ```
+## Käivitamine
+Selleks, et käesolev rakendus käivitada, tuleb esialgu luua ```WeatherWise``` klassi objekt. 
+```WeatherWise``` konstruktoril on kaks võimalikku parameetrit: ```WeatherApi``` ja ```WeatherFile``` klasside objektid,
+kuid ```WeatherWise``` objekti saab ka ilma nende parameetrideta instantsieerida - siis luuakse uued ülalmainitud objektid.
 
+Näide instantsieerimisest:
+```java
+WeatherWise weatherWise = new WeatherWise();
+```
 
-## Progress
-- [X] 1. Unittestid
-- [X] 2. Programmikood
-- [X] 3. Faili lugemine/kirjutamine
-- [X] 4. Mockimine
-- [X] 5. Integratsiooni testid
-- [X] 6. UI testid
+Seejärel saab välja kutsuda objekti meetod ```getWeatherReportFromFile(String path)```, millel on üks
+kohustuslik parameeter - ```String path``` - faili tee, kust soovitakse linnu lugeda. Meetod ise tagastab
+```List<WeatherReport>``` - järjendi, mille sees on saadud ilmateated ```WeatherReport``` objekti kujul.
 
+Näide meetodi väljakutsumisest:
+```java
+weatherWise.getWeatherReportFromFile("src/path/to/file.txt");
+```
+
+Sisendfail peab kindlasti olema ```.txt``` formaadis ning sisaldama linnu, iga linn peab olema uuel real.
+
+Näide sisendfailist:
+```text
+Tallinn
+Riga
+Vilnius
+Helsinki
+``` 
 ## Testimiskava
 ### Unit testid
-
+Projekti Unit Teste sisaldav test-fail
 ### Mockimine
 
 ### Integratsiooni testid
@@ -68,15 +97,18 @@ Näide väljundfailist:
 
 ### UI testid
 
+## Testide käivitamine
+Selleks, et jooksutada testid, tuleb käivitada vastav ```.java``` fail ```test/``` kaustast.
+
+Projekti ```test/``` kataloogis asub mitu alamkataloogi:
+- ```unittest/UnitTests.java``` - üldised ühiktestid;
+- ```mock/```
+    - ```WeatherApiMockTests.java``` - API mock testid; saab käivitada ka siis, kui internetiühendus puudub;
+    - ```WeatherFileMockTests.java``` - I/O mock testid; saab käivitada ka siis, kui sisendfaili pole olemas;
+- ```integration/IntegrationTests.java``` - integratsiooni testid;
+- ```ui_tests/UITests.java``` - UI testid.
 
 ## Hindamisel jälgin, et oleks olemas järgmised punktid
-- Vähemalt 3 unit testi, millest vähemalt 1 testib rakenduse poolt Exceptioni viskamist
-- Vähemalt 3 integratsiooni testi (ei ole mockitud, kasutavad päris API-t).
-- 2 mockitud testi, millest vähemalt 1 on stub ja 1 on mock
-- Vähemalt 3 UI testi
-- Kood on versioneeritud (Git) ja commitides jälgitud Git häid praktikaid
 - Sõltuvusute haldamiseks on kasutatud vastavad vahendid (Maven, Gradle, NPM, NuGet vms)
 - Implementeeritud mingit sorti jälgitavust, nt Logimine: request on logitud maha, response on logitud maha, vms.
-- Kui test feilib, siis peaks olema selge, miks ta feilis ja kus ta feilis (sisend, väljund, tegelik vs oodatud, class, rida, screenshot, video vms)
-- Projektil peab olema README, milles on välja toodud: üldine testimise strateegia ja lähenemine, kuidas rakendus käivitada (vajadusel paigaldusjuhend) ja kuidas erinevad testid käivitada ja näha tulemust
-- Kood esitada Clean Code nõuetele vastavalt
+- Projektil peab olema README, milles on välja toodud: üldine testimise strateegia ja lähenemine

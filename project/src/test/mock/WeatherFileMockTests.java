@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WeatherFileMockTest {
+public class WeatherFileMockTests {
 
     @Mock
     WeatherFile weatherFileMock;
