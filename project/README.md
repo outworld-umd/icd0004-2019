@@ -152,3 +152,11 @@ Projekti ```test/``` kataloogis asub mitu alamkataloogi:
     - ```WeatherFileMockTests.java``` - I/O mock testid; saab käivitada ka siis, kui sisendfaili pole olemas;
 - ```integration/IntegrationTests.java``` - integratsiooni testid;
 - ```ui_tests/UITests.java``` - UI testid.
+
+Selleks, et käivitada kõik projektiga seotud testid, kasutage käsku:
+
+```mvn test -P WeatherWiseTests```
+
+Selleks, et käivitada kasutajaliidese testid, kasutage käsku:
+
+```mvn test -P UITests```
