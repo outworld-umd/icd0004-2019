@@ -153,10 +153,8 @@ Projekti ```test/``` kataloogis asub mitu alamkataloogi:
 - ```integration/IntegrationTests.java``` - integratsiooni testid;
 - ```ui_tests/UITests.java``` - UI testid.
 
-Selleks, et käivitada kõik projektiga seotud testid, kasutage käsku:
-
-```mvn test -P WeatherWiseTests```
-
-Selleks, et käivitada kasutajaliidese testid, kasutage käsku:
-
-```mvn test -P UITests```
+Kui on vaja käivitada:
+ 
+- kõik __WeatherWise rakenduse testid__, kasutage käsku: ```mvn test -P WeatherWiseTests```
+- __kasutajaliidese testid__, kasutage käsku: ```mvn test -P UITests```
+- ainult __üks test-fail__, kasutage käsku: ```mvn -Dtest={failinimi}.java test```
