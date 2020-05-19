@@ -1,6 +1,7 @@
 package page_object;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 public class EducationInfoPage {
@@ -13,6 +14,10 @@ public class EducationInfoPage {
     }
 
     public boolean isHeaderText(String text) {
-        return driver.findElement(mainTitle).getText().equals(text);
+        try {
+            return driver.findElement(mainTitle).getText().equals(text);
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 }
